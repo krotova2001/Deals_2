@@ -7,12 +7,12 @@
 • описание;
 • дата, время исполнения.
 ¦ Удаление дел.
-¦ Редактирование дел.
-¦ Поиск дел по:
-• названию;
-• приоритету;
-• описанию;
-• дате и времени исполнения.
+    ¦ Редактирование дел.
+    ¦ Поиск дел по:
+    • названию;
+    • приоритету;
+    • описанию;
+    • дате и времени исполнения.
 ¦ Отображение списка дел:
 • на день;
 • на неделю;
@@ -26,17 +26,31 @@
 #include <cstdlib>
 using namespace std;
 
+struct Date // встроенная структура даты в структуре дела
+{
+    int day;
+    int month;
+    int year;
+};
+
+struct Time // встроенная структура времени в структуре дела
+{
+    int hour;
+    int minutes;
+};
+
 struct deal // структура одного экземпляра дела 
 {
     int id; //уникальный порядковый номер
-    char priority; // важность
+    int priority; // важность
     char name[50]; // имя
     char information[250]; // описание 
-    char date[10]; // дата исполнения 
-    char time[10]; // срок
+    struct Date date; // дата исполнения 
+    struct Time time; // время исполнения
+    long int time_id;//метка времени для быстрого поиска по времени
 };
 
-void Create_deal(deal* Deals_all, int* size) // функция создания экземпляра дела. Принимает указатель на 
+deal* Create_deal(deal* Deals_all, int* size) // функция создания экземпляра дела. Принимает указатель на 
 //базу данных всех дел. Создает новый массив на 1 элемент больше принятого и записывает в новый элемент новый экземпляр
 {
     deal new_deal; //создадим и заполним новое дело
@@ -47,10 +61,20 @@ void Create_deal(deal* Deals_all, int* size) // функция создания 
     cout << "Описание\n";
     cin >> new_deal.information;
     cout << "Дата\n";
-    cin >> new_deal.date;
+        cout << "день\n";
+        cin >> new_deal.date.day;
+        cout << "месяц\n";
+        cin >> new_deal.date.month;
+        cout << "год\n";
+        cin >> new_deal.date.year;
     cout << "Время исполнения\n";
-    cin >> new_deal.time;
-    new_deal.id = *(size)+1; // назначим порядковый номер
+        cout << "часы\n";
+        cin >> new_deal.time.hour;
+        cout << "минуты\n";
+        cin >> new_deal.time.minutes;
+        //формируем индекс времени
+        new_deal.time_id = new_deal.time.minutes * 525600 + new_deal.time.hour * 8760 + new_deal.date.day * 365 + new_deal.date.month * 12 + new_deal.date.year;
+    new_deal.id = (*size)+1; // назначим порядковый номер
 
     deal* Deals_new = new deal[(*size) + 1]; // создаем новую базу дел, на 1 дело больше чем было
     for (int i = 0; i < *size; i++)
@@ -58,28 +82,88 @@ void Create_deal(deal* Deals_all, int* size) // функция создания 
         Deals_new[i] = Deals_all[i]; // скопируем всё туда
     }
     Deals_new[(*size)] = new_deal; // дописываем новое дело в базу
-    Deals_all = Deals_new; //перезапишем указатели
-    //delete[]Deals_new; // удалим временный массив - базу
+    delete[]Deals_all; // удалим старую массив - базу
     (*size)++; // размер увеличился
-
+    return Deals_new;
 }
 
 void Show_deal_all(deal* a, int size) // функция отображения списка всех дел
 {
-    for (int i = 0; i < size; i++)
+    system("cls"); // очистим экран и выведем подменю
+    int choise;
+    cout << "Отображаем:\n";
+    cout << "Порядку - 1 (время добавления)\n";
+    cout << "По приоритету - 2\n";
+    cout << "По времени выполнения - 3 \n";
+    cout << "Выход в меню - 0\n";
+    cin >> choise;
+    switch (choise) // выбор отображения
     {
-        cout << "\n";
-        cout << "Порядковый номер - " << a[i].id << "\n";
-        cout << "Название - " << a[i].name << "\n";
-        cout << "Приоритет - " << a[i].priority << "\n";
-        cout << "Описание - " << a[i].information << "\n";
-        cout << "Срок - " << a[i].date << "\n";
-        cout << "Время - " << a[i].time << "\n";
-        cout << "-------------------------------------\n";
+    case 1: // по порядку
+        for (int i = 0; i < size; i++)
+        {
+            cout << "\n";
+            cout << "Порядковый номер - " << a[i].id << "\n";
+            cout << "Название - " << a[i].name << "\n";
+            cout << "Приоритет - " << a[i].priority << "\n";
+            cout << "Описание - " << a[i].information << "\n";
+            cout << "Срок - " << a[i].date.day <<"/"<< a[i].date.month<<"/"<<a[i].date.year<<"\n";
+            cout << "Время - " << a[i].time.hour << ":"<< a[i].time.hour<<"\n";
+            cout << "-------------------------------------\n";
+        }
+        break;
+    case 2: // по приоритету
+        for (int j=1; j<=4; j++) //перебираем приоритет
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if (a[i].priority == j) // выводим в соответствии с приоритетами
+                {           
+                    cout << "\n";
+                    cout << "Приоритет - " << a[i].priority << "\n";
+                    cout << "Порядковый номер - " << a[i].id << "\n";
+                    cout << "Название - " << a[i].name << "\n";
+                    cout << "Описание - " << a[i].information << "\n";
+                    cout << "Срок - " << a[i].date.day << "/" << a[i].date.month << "/" << a[i].date.year << "\n";
+                    cout << "Время - " << a[i].time.hour << ":" << a[i].time.hour << "\n";
+                    cout << "-------------------------------------\n";
+                }
+            }
+        }
+        break;
+    case 3: //По дате
+            {
+                int i_min = 0; // будем искать индекс элемента с минимальным индексом времени
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size - 1; j++)
+                        {
+                            if (a[i].time_id < a[j].time_id)
+                            i_min = i; // пузырьковой сортировко находим
+                        }
+                    // и выводим
+                    cout << "\n";
+                    cout << "Приоритет - " << a[i_min].priority << "\n";
+                    cout << "Порядковый номер - " << a[i_min].id << "\n";
+                    cout << "Название - " << a[i_min].name << "\n";
+                    cout << "Описание - " << a[i_min].information << "\n";
+                    cout << "Срок - " << a[i_min].date.day << "/" << a[i_min].date.month << "/" << a[i_min].date.year << "\n";
+                    cout << "Время - " << a[i_min].time.hour << ":" << a[i_min].time.hour << "\n";
+                    cout << "-------------------------------------\n";
+                }
+                break; 
+            }
+    case 0:
+        return;
+    default: // на всякий случай
+        return;
+        break;
     }
+
+   
 }
 
-void Delete_deal(deal* Deals_all, int* size, int id) //функция удаления дела. Принимает массив дел, размер и ID дела
+deal* Delete_deal(deal* Deals_all, int* size, int id) //функция удаления дела. Принимает массив дел, размер и ID дела
 {
     deal* Deals_new = new deal[(*size) - 1]; // создаем новую базу дел, на 1 дело меньше чем было
     //скопируем в чать нового массива чать до удаляемого элемента
@@ -92,12 +176,14 @@ void Delete_deal(deal* Deals_all, int* size, int id) //функция удале
     {
         Deals_new[i] = Deals_all[i + 1]; // 
     }
-    Deals_all = Deals_new; //перезапишем указатели
     (*size)--;
+    delete[]Deals_all;
+    return Deals_new;
 }
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
     cout << "Привет, мой юный друг!\n\n";
     int size = 0; // создадим начальный размер массива дел
     int* psize = &size; // указатель на него, чтоб менять из функции
@@ -118,7 +204,7 @@ int main()
         switch (choise)
         {
         case 1:
-            Create_deal(Deals_all, &size);
+            Deals_all=Create_deal(Deals_all, &size);
             break;
         case 2:
             break;
@@ -131,13 +217,10 @@ int main()
             int choise2;
             cout << "Введите ID дела";
             cin >> choise2;
-            Delete_deal(Deals_all, &size, choise2);
+            Deals_all=Delete_deal(Deals_all, &size, choise2);
             break;
         default:
             break;
         }
     } while (choise != 0);
-
-
 }
-
