@@ -161,8 +161,69 @@ void Show_deal_all(deal* a, int size) // функция отображения �
     }
 
    
+
 }
 
+void Search_deal(deal* a, int size) // функция посика дел
+{
+    system("cls"); // очистим экран и выведем подменю
+    int choise;
+    cout << "Поиск по:\n";
+    cout << "По названию 1\n";
+    cout << "По описанию - 2\n";
+    cout << "По времени выполнения - 3 \n";
+    cout << "По приоритету - 4 \n";
+    cout << "Выход в меню - 0\n";
+    cin >> choise;
+    switch (choise) // выбор отображения
+    {
+    case 1:
+    {
+        char name[50];
+        int equal = 0;
+        cout << "Введите имя\n";
+        cin >> name;
+        for (int i = 0; i < 50; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                for (int l = i; l < 50; l++)
+                {
+                    if (name[i] != (a[j].name)[i]) { break; }
+                    else if (name[i] == (a[j].name)[l]) { equal++; }
+                    if (equal > 3)
+                    {
+                        cout << "\n";
+                        cout << "Приоритет - " << a[l].priority << "\n";
+                        cout << "Порядковый номер - " << a[l].id << "\n";
+                        cout << "Название - " << a[l].name << "\n";
+                        cout << "Описание - " << a[l].information << "\n";
+                        cout << "Срок - " << a[l].date.day << "/" << a[l].date.month << "/" << a[l].date.year << "\n";
+                        cout << "Время - " << a[l].time.hour << ":" << a[l].time.hour << "\n";
+                        cout << "-------------------------------------\n";
+                        break;
+                    }
+
+                }
+
+            }
+
+
+            cout << "Совпадений не найдено\n";
+        }
+        break; }
+    case 2:
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 0:
+        return;
+    
+
+    }
+}
 deal* Delete_deal(deal* Deals_all, int* size, int id) //функция удаления дела. Принимает массив дел, размер и ID дела
 {
     deal* Deals_new = new deal[(*size) - 1]; // создаем новую базу дел, на 1 дело меньше чем было
@@ -207,6 +268,7 @@ int main()
             Deals_all=Create_deal(Deals_all, &size);
             break;
         case 2:
+            Search_deal(Deals_all, size);
             break;
         case 3:
             Show_deal_all(Deals_all, size);
