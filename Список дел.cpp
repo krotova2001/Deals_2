@@ -217,7 +217,14 @@ void Search_deal(deal* a, int size) // функция посика дел
     case 3:
         break;
     case 4:
-        break;
+    {
+        int prior;
+        cout << "Введите приоритет";
+        cin >> prior;
+
+
+            break; 
+    }
     case 0:
         return;
     
