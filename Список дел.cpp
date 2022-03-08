@@ -11,7 +11,7 @@
     ¦ Поиск дел по:
  • названию;
  • приоритету;
-    • описанию;
+ • описанию;
     • дате и времени исполнения.
 ¦ Отображение списка дел:
 • на день;
@@ -203,6 +203,7 @@ void Search_deal(deal* a, int size) // функция поиска дел
         break;
     }
     case 3: // по времени выполненния
+        cout << "\n";
         break;
     case 4: // по приоритету
     {
@@ -221,6 +222,15 @@ void Search_deal(deal* a, int size) // функция поиска дел
         return;
     }
 }
+
+deal* Edit_deal(deal* Deals_all, int* size, int id) // редактирование дел. Принимает массив дел, размер и ID дела
+{
+    deal* Deals_new = new deal[(*size)];
+
+    delete[]Deals_all; //очищаем память
+    return Deals_new; // возвращаем указатель на очищенную БД
+}
+
 deal* Delete_deal(deal* Deals_all, int* size, int id) //функция удаления дела. Принимает массив дел, размер и ID дела
 {
     deal* Deals_new = new deal[(*size) - 1]; // создаем новую базу дел, на 1 дело меньше чем было
