@@ -29,6 +29,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#pragma warning(disable : 4996)
 using namespace std;
 
 char weeks[7][12]{ "Понедельник", "Вторник", "Среда", "Четверг","Пятница", "Суббота", "Воскресенье" };
@@ -59,7 +60,7 @@ struct deal // Основная - структура одного экземпл
     char week[12]; // день недели
     long int time_id;//метка времени для быстрого поиска по времени
 };
-
+/*
 char* Week_auto(char weeks, deal a) //функция автоматического определения дня недели в пределах года
 {
     char* week[12]; //здесь определим название дня недели
@@ -81,7 +82,7 @@ char* Week_auto(char weeks, deal a) //функция автоматическо�
     strcpy(*week, weeks[temp_day-1]);
     return* week; 
 }
-
+*/
 void Show_deal(deal* a, int i) // простая функция показа одного дела. Принимает указатель на элемент массива и номер элемента
 {
     cout << "\n";
@@ -251,12 +252,55 @@ void Search_deal(deal* a, int size) // функция поиска дел
     }
 }
 
-deal* Edit_deal(deal* Deals_all, int* size, int id) // редактирование дел. Принимает массив дел, размер и ID дела
+deal* Edit_deal(deal* Deals_all, int* size) // редактирование дел. Принимает массив дел, размер
 {
-    deal* Deals_new = new deal[(*size)];
+    int id; // ID дела которое надо отредактировать
+    deal new_deal;
+    deal* Deals_new = new deal[(*size)]; // создаем массив новой БД такого же размера
+    for (int i = 0; i < *size; i++)
+    {
+        Deals_new[i] = Deals_all[i];
+    }
+
+
+    cout << "Введите ID дела";
+    cin >> id;
+    Show_deal(Deals_all, id-1); // покажем для наглядности
+    cout << "Новая важность дела (1-4) (Enter - оставить без изменений) \n";
+    cin >> new_deal.priority;
+    if (new_deal.priority != NULL) Deals_new[id - 1].priority = new_deal.priority;
+   
+    cout << "Новое название дела (Enter - оставить без изменений)\n";
+    cin >> new_deal.name;
+    if (new_deal.name != NULL) strcpy(Deals_new[id - 1].name, new_deal.name);
+
+    cout << "Новое описание  (Enter - оставить без изменений)\n";
+    cin >> new_deal.information;
+    if (new_deal.information != NULL) strcpy(Deals_new[id - 1].information, new_deal.information);
+
+    cout << "Новая дата  (Enter - оставить без изменений)\n";
+    cout << "Новый день  (Enter - оставить без изменений)\n";
+    cin >> new_deal.date.day;
+    if (new_deal.date.day != NULL) Deals_new[id - 1].date.day = new_deal.date.day;
+
+    cout << "Новый месяц  (Enter - оставить без изменений)\n";
+    cin >> new_deal.date.month;
+    if (new_deal.date.month != NULL) Deals_new[id - 1].date.month = new_deal.date.month;
+
+    //cout << "Новый год  (Enter - оставить без изменений)\n";
+    //cin >> new_deal.date.year;
+
+    cout << "Новое Время исполнения\n";
+    cout << "часы  (Enter - оставить без изменений)\n";
+    cin >> new_deal.time.hour;
+    if (new_deal.time.hour != NULL) Deals_new[id - 1].time.hour = new_deal.time.hour;
+    
+    cout << "минуты  (Enter - оставить без изменений)\n";
+    cin >> new_deal.time.minutes;
+    if (new_deal.time.minutes != NULL) Deals_new[id - 1].time.minutes = new_deal.time.minutes;
 
     delete[]Deals_all; //очищаем память
-    return Deals_new; // возвращаем указатель на очищенную БД
+    return Deals_new; // возвращаем указатель на измененную БД
 }
 
 deal* Delete_deal(deal* Deals_all, int* size, int id) //функция удаления дела. Принимает массив дел, размер и ID дела
@@ -309,6 +353,7 @@ int main()
             Show_deal_all(Deals_all, size);
             break;
         case 4:
+            Deals_all = Edit_deal(Deals_all, &size);
             break;
         case 5:
             int choise2;
