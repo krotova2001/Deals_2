@@ -409,41 +409,64 @@ deal* Delete_deal(deal* Deals_all, int* size, int id) //функция удал�
     return Deals_new; // возвращаем указатель на очищенную БД
 }
 
+deal* Add(deal* m, int &s, deal ni)
+{
+    deal* n = new deal[s + 1];
+    for (int i = 0; i < s; i++)
+    {
+        n[i].date = m[i].date;
+        n[i].id = m[i].id;
+        n[i].priority = m[i].priority;
+        n[i].time = m[i].time;
+        n[i].time_id = m[i].time_id;
+        strcpy_s(n[i].name, 50, m[i].name);
+        strcpy_s(n[i].week, 12, m[i].week);
+        strcpy_s(n[i].information, 250, m[i].information);
+    }
+    if (m != nullptr)
+        delete[] m;
+    
+    //n[s].i_val = ni.i_val;
+    //strcpy_s(n[s].s_val, 50, ni.s_val);
+
+    n[s].date = ni.date;
+    n[s].id = ni.id;
+    n[s].priority = ni.priority;
+    n[s].time = ni.time;
+    n[s].time_id = ni.time_id;
+    strcpy_s(n[s].name, 50, ni.name);
+    strcpy_s(n[s].week, 12, ni.week);
+    strcpy_s(n[s].information, 250, ni.information);
+
+    s++;
+    return n;
+}
+
 void Write_deals(deal* a, int size) // функция записи базы данных дел в файл
 {
-    FILE* file = fopen("results.bin", "wb"); // открыть для записи в бинарном режиме
-    char* c; // указатель на символ
+    FILE* file = nullptr;
+    fopen_s(&file, "results.bin", "wb"); // открыть для записи в бинарном режиме
+    
     if (file != nullptr) // проверка открылся ли файл
     {
-        for (int i = 0; i < size; i++) // в цикле записываем все структуры
-        {
-            c = (char*)&(a[i]); // устанавливаем указатель на начало структуры
-            for (int j = 0; j < sizeof(a[i]); j++) //посимвольно записываем структуру
-            {
-                putc(*c++, file); // записываем символ
-            }
-        }
+        fwrite(a, sizeof(deal), size, file);
         cout << "База данных сохранена\n";
         fclose(file);
     }
     else { cout << "\nНе могу записать базу данных дел"; }
 }
-
+/*
 deal* Load_deal() // а вот тут посложнее. Это загрузка из файла баз данных
 {
     FILE* file = fopen("results.bin", "rb"); // открыть для чтения в бинарном режиме
-    char* c; // указатель на символ
-    int i; // код символа
-    
-    int size_one = sizeof(deal); // размер одной структуы
     int size_all=0; // здесь позже определим кол-во структур
+    
     if (file != nullptr) // проверка открылся ли файл
     {
-        while (getc(file) != EOF) // считываем по 1 байту
+        while (!(feof(file))) // считываем по 360 байт (размер структуры)
         {
-            size_all++; // считаекм кол-во байтов
+            size_all += fread(; sizeof(deal), 1, file);
         }
-        size_all /= size_one; // получаем количество структур в файле
         cout << "Кол-во дел " << size_all << "\n";
     }
     else { cout << "\nНе могу открыть базу данных дел"; }
@@ -452,25 +475,40 @@ deal* Load_deal() // а вот тут посложнее. Это загрузк�
 
     if (file != nullptr) // проверка открылся ли файл
     {
-        while (getc(file)!= EOF)
+        while (!(feof(file)))
         {
-           for (int j = 0; j < size_one; j++) // едем до конца размера одной структуры
+            for (int i = 0; i < size_all; i++)
             {
-               c = (char*)&(Deals_all[j]); // устанавливаем указатель на начало блока выделенной памяти
-               i = getc(file);
-               *c = i;
-
-               i++;
-            } 
+                fread(Deals_all[i], sizeof(deal), 1, file);
+            }
         }
         fclose(file);
         cout << "База данных загружена\n";
         return Deals_all;
     }
-    else { cout << "\nНе могу открыть базу данных дел"; }
-    
-    
-   
+   else { cout << "\nНе могу открыть базу данных дел"; }
+}
+
+*/
+
+deal* Load_deal(deal*a, int &s)
+{
+    if (a != nullptr)
+        delete[]a;
+    a = nullptr;
+    s = 0;
+    FILE* pfile = nullptr;
+    fopen_s(&pfile, "results.bin", "rb");
+    if (pfile != nullptr)
+    {
+        deal ni;
+        while (fread(&ni, sizeof(deal), 1, pfile) > 0)
+        {
+            a = Add(a, s, ni);
+        }
+        fclose(pfile);
+    }
+    return a;
 }
 
 int main()
@@ -479,8 +517,8 @@ int main()
     cout << "Привет, мой юный друг!\n\n";
     int size = 0; // создадим начальный размер массива дел
     int* psize = &size; // указатель на него, чтоб менять из функции
-    //deal* Deals_all = new deal[size]; // создадим массив переменной длины для хранения дел - наша база данных
-    deal* Deals_all = Load_deal();
+    deal* Deals_all = new deal[size]; // создадим массив переменной длины для хранения дел - наша база данных
+    Deals_all = Load_deal(Deals_all, size);
     int choise;
     do {
         //выводим постоянное меню
