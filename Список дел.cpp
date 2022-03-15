@@ -108,7 +108,7 @@ deal* Create_deal(deal* Deals_all, int* size) // функция создания
     scanf("%49s", &new_deal.name);
     cout << "Описание\n";
     cin >> new_deal.information;
-    cout << "Дата\n";
+    cout << "Дата:\n";
     cout << "день\n";
     scanf("%2d", &new_deal.date.day);
     cout << "месяц\n";
@@ -469,7 +469,12 @@ deal* Load_deal(deal*a, int &s) // функция загрузки файла в
         {
             a = Add(a, s, ni); // записываем новое дело к общему массиву в памяти
         }
+        cout << s << " дел загружено\n";
         fclose(pfile);
+    }
+    else
+    {
+        cout << "Не могу загрузить дела";
     }
     return a; // возвращаем указатель на массив дел
 }
