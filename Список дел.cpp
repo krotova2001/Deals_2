@@ -107,7 +107,8 @@ deal* Create_deal(deal* Deals_all, int* size) // функция создания
     cout << "Название дела\n";
     scanf("%49s", &new_deal.name);
     cout << "Описание\n";
-    cin >> new_deal.information;
+    cin.get(); // чтобы функция cin.getline отрабатывала нормально, нужно перед ней выбросить \n из потока, так как cin>> ее там оставляет
+    cin.getline (new_deal.information,249);
     cout << "Дата:\n";
     cout << "день\n";
     scanf("%2d", &new_deal.date.day);
@@ -451,7 +452,7 @@ void Write_deals(deal* a, int size) // функция записи базы да
         cout << "База данных сохранена\n";
         fclose(file); // закрываем файл
     }
-    else { cout << "\nНе могу записать базу данных дел"; }
+    else { cout << "\nНе могу записать базу данных дел\n"; }
 }
 
 deal* Load_deal(deal*a, int &s) // функция загрузки файла всех структур (базы данных)
@@ -474,7 +475,7 @@ deal* Load_deal(deal*a, int &s) // функция загрузки файла в
     }
     else
     {
-        cout << "Не могу загрузить дела";
+        cout << "Не могу загрузить дела\n\n";
     }
     return a; // возвращаем указатель на массив дел
 }
